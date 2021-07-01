@@ -3,23 +3,18 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <PROGDIR>
-    <NAME>ZI_CODEMETRICS_TO_FILE</NAME>
+    <NAME>ZDB_TO_CODECHARTA</NAME>
+    <DBAPL>S</DBAPL>
     <SUBC>1</SUBC>
-    <RLOAD>E</RLOAD>
     <FIXPT>X</FIXPT>
+    <LDBNAME>D$S</LDBNAME>
     <UCCHECK>X</UCCHECK>
    </PROGDIR>
    <TPOOL>
     <item>
      <ID>R</ID>
-     <ENTRY>Code Metrics to Tab Delimited File</ENTRY>
-     <LENGTH>34</LENGTH>
-    </item>
-    <item>
-     <ID>I</ID>
-     <KEY>001</KEY>
-     <ENTRY>No file name specified</ENTRY>
-     <LENGTH>44</LENGTH>
+     <ENTRY>Reads from ZCODEMETRICS and converts to CodeCharta JSON</ENTRY>
+     <LENGTH>55</LENGTH>
     </item>
    </TPOOL>
   </asx:values>

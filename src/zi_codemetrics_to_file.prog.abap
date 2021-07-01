@@ -1,5 +1,5 @@
 *
-* This is version 0.5.0
+* This is version 0.5.1 for 7.31 upwards
 *
 *The MIT License (MIT)
 *
@@ -22,7 +22,6 @@
 *LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 *OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *SOFTWARE.
-
 REPORT zi_codemetrics_to_file.
 
 *----------------------------------------------------------------------*
@@ -36,14 +35,14 @@ CLASS lcl_code_metrics DEFINITION.
       IMPORTING
         selection_variant TYPE variant
       RETURNING
-        value(result)     TYPE ztti_a2cc_code_metrics
+        VALUE(result)     TYPE ztti_a2cc_code_metrics
       RAISING
         cx_salv_bs_sc_runtime_info.
     METHODS convert_to_string
       IMPORTING
-        i_code_metrics TYPE ztti_a2cc_code_metrics
+        i_code_metrics  TYPE ztti_a2cc_code_metrics
       RETURNING
-        value(r_result) TYPE string.
+        VALUE(r_result) TYPE string.
     METHODS check_variant
       IMPORTING
         i_variant TYPE variant.
@@ -54,14 +53,14 @@ CLASS lcl_code_metrics DEFINITION.
         selection_variant TYPE variant.
     METHODS get_alv_list_from_report
       RETURNING
-        value(result) TYPE ztti_a2cc_code_metrics
+        VALUE(result) TYPE ztti_a2cc_code_metrics
       RAISING
         cx_salv_bs_sc_runtime_info.
     METHODS convert_code_metric_to_string
       IMPORTING
-        i_code_metric TYPE zsi_a2cc_code_metrics
+        i_code_metric   TYPE zsi_a2cc_code_metrics
       RETURNING
-        value(r_result) TYPE string.
+        VALUE(r_result) TYPE string.
 
 ENDCLASS.                    "lcl_code_metrics DEFINITION
 
@@ -186,8 +185,8 @@ CLASS lcl_file_output DEFINITION.
   PUBLIC SECTION.
     METHODS write_file
       IMPORTING
-        value(file_name) TYPE localfile
-        content             TYPE string.
+        VALUE(file_name) TYPE localfile
+        content          TYPE string.
     METHODS check_file_directory
       IMPORTING
         i_file TYPE localfile.
@@ -196,7 +195,7 @@ CLASS lcl_file_output DEFINITION.
       IMPORTING
         string        TYPE string
       RETURNING
-        value(result) TYPE xstring.
+        VALUE(result) TYPE xstring.
     METHODS write_xstring_to_file
       IMPORTING
         file_name TYPE localfile
@@ -205,7 +204,7 @@ CLASS lcl_file_output DEFINITION.
       IMPORTING
         file_name     TYPE localfile
       RETURNING
-        value(result) TYPE localfile.
+        VALUE(result) TYPE localfile.
 ENDCLASS.                    "lcl_file_output DEFINITION
 
 *----------------------------------------------------------------------*
@@ -245,12 +244,24 @@ CLASS lcl_file_output IMPLEMENTATION.
   ENDMETHOD.                    "adjust_filename
 
   METHOD check_file_directory.
-    DATA directory TYPE localfile.
-    CALL FUNCTION 'LIST_SPLIT_PATH'
+    DATA: directory TYPE localfile,
+          filename  TYPE localfile.
+    CALL FUNCTION 'SO_SPLIT_FILE_AND_PATH'
       EXPORTING
-        filename = i_file
+        full_name     = i_file
       IMPORTING
-        pathname = directory.
+        stripped_name = filename
+        file_path     = directory
+      EXCEPTIONS
+        x_error       = 1
+        OTHERS        = 2.
+    IF sy-subrc <> 0.
+      MESSAGE ID sy-msgid TYPE 'E' NUMBER sy-msgno
+                 WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+    ENDIF.
+    IF filename IS INITIAL.
+      MESSAGE 'No file name specified'(001) TYPE 'E'.
+    ENDIF.
     CALL FUNCTION 'PFL_CHECK_DIRECTORY'
       EXPORTING
         directory_long              = directory    " Name of directory
